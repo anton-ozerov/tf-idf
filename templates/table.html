@@ -1,0 +1,46 @@
+<html lang="ru">
+    <head>
+        <title>Результаты анализа TF-IDF</title>
+    </head>
+    <body>
+        <div id="buttons-container" style="display: none;">
+            <h3>Переключение между файлами:</h3>
+            <button onclick="changeTable(-1)">Предыдущий</button>
+            <button onclick="changeTable(1)">Следующий</button>
+        </div>
+
+        <div id="message-container" style="display: none;">
+            <h2>Нужно 2 и более файла для корректного вычисления IDF</h2>
+        </div>
+
+        <div id="tables">
+            {% for doc in data %}
+                <div class="table-block" id="table-{{ loop.index0 }}" style="display: {% if loop.index0 == 0 %}block{% else %}none{% endif %}">
+                    <h3>TF-IDF для файла: <em>{{ doc.doc_name }}</em></h3>
+                    <table border="1">
+                        <tr><th>Слово</th><th>TF</th><th>IDF</th></tr>
+                        {% for row in doc.doc_data %}
+                            <tr><td>{{ row.name }}</td><td>{{ row.tf }}</td><td>{{ row.idf }}</td></tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            {% endfor %}
+        </div>
+        <script>
+            const docsCount  = {{ docs_length }};
+
+            if (docsCount > 1) {
+                document.getElementById("buttons-container").style.display = "block";
+            } else {
+                document.getElementById("message-container").style.display = "block";
+            }
+
+            let current = 0;
+            function changeTable(delta) {
+                document.getElementById("table-" + current).style.display = "none";
+                current = (current + delta + docsCount ) % docsCount ;
+                document.getElementById("table-" + current).style.display = "block";
+            }
+        </script>
+    </body>
+</html>
